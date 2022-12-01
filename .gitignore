@@ -1,0 +1,4 @@
+*/**/cmake_build_debug/*
+*/**/.idea
+*/CMakeLists.txt
+*/**/*.in
