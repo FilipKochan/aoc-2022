@@ -2,3 +2,5 @@
 */**/.idea
 */CMakeLists.txt
 */**/*.in
+*/**/*.o
+*/**/*.hi
