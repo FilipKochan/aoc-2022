@@ -33,11 +33,8 @@ int main() {
     std::set<ps> p;
     std::set<ps> p2;
 
-    ps hpos = { 0, 0 };
-    ps tpos = { 0, 0 };
-
-    p.insert(tpos);
-    p2.insert(tpos);
+    p.insert({0, 0});
+    p2.insert({ 0, 0});
 
     ps tails[PIECES];
 
@@ -46,52 +43,91 @@ int main() {
     }
 
     while (scanf("%c %d\n", &d, &off) > 0) {
-        int dir = 1;
+        int xoff = 0, yoff = 0;
         switch (d) {
             case 'R':
-                hpos.x += off;
-                tails[0].x += off;
+                xoff = 1;
                 break;
             case 'D':
-                hpos.y -= off;
-                tails[0].y -= off;
-                dir = -1;
+                yoff = -1;
                 break;
             case 'L':
-                hpos.x -= off;
-                tails[0].x -= off;
-                dir = -1;
+                xoff = -1;
                 break;
             case 'U':
-                hpos.y += off;
-                tails[0].y += off;
+                yoff = 1;
                 break;
             default:
                 std::cerr << "unknown direction" << std::endl;
                 exit(1);
         }
 
-        if (tpos.dist(hpos) <= 1 || tpos.is_diag(hpos)) {
-            p.insert(tpos);
-        } else if (tpos.dist(hpos) >= 2) {
-            if (tpos.xdist(hpos) == 1 || tpos.xdist(hpos) == 0) {
-                tpos.x = hpos.x;
+        off = std::abs(off);
+        while (off--) {
+            tails[0].x += xoff;
+            tails[0].y += yoff;
+            
+            for (int i = 1; i < PIECES; i++) {
+                ps *h = tails + i - 1;
+                ps *t = tails + i;
 
-                while (tpos.dist(hpos) > 1) {
-                    tpos.y += dir;
-                    p.insert(tpos);
-                }
+                if (t->dist(*h) <= 1 || t->is_diag(*h)) {
+                    if (i == 1){
+                        p.insert(*t);
+                    } else if (i + 1 == PIECES) {
+                        p2.insert(*t);
+                    }
+                } else if (t->dist(*h) >= 2) {
+                    if (t->xdist(*h) == 1 || t->xdist(*h) == 0) {
+                        t->x = h->x;
 
-            } else if (tpos.ydist(hpos) == 1 || tpos.ydist(hpos) == 0){
-                tpos.y = hpos.y;
-                while (tpos.dist(hpos) > 1) {
-                    tpos.x += dir;
-                    p.insert(tpos);
+                        int dir = 1;
+                        if (t->y > h->y) {
+                            dir = -1;
+                        }
+                        while (t->dist(*h) > 1) {
+                            t->y += dir;
+                            if (i == 1){
+                                p.insert(*t);
+                            } else if (i + 1 == PIECES) {
+                                p2.insert(*t);
+                            }
+                        }
+
+                    } else if (t->ydist(*h) == 1 || t->ydist(*h) == 0){
+                        t->y = h->y;
+                        int dir = 1;
+                        if (t->x > h->x) {
+                            dir = -1;
+                        }
+                        while (t->dist(*h) > 1) {
+                            t->x += dir;
+                            if (i == 1){
+                                p.insert(*t);
+                            } else if (i + 1 == PIECES) {
+                                p2.insert(*t);
+                            }
+                        }
+                    }
+                    else if (t->xdist(*h) == t->ydist(*h)) {
+                        int xdiff, ydiff;
+                        if (h->x - t->x > 0) { xdiff = 1; } else { xdiff = -1;}
+                        if (h->y - t->y > 0) { ydiff = 1; } else { ydiff = -1;}
+
+                        while (!t->is_diag(*h)) {
+                            t->x += xdiff;
+                            t->y += ydiff;
+                            if (i == 1){
+                                p.insert(*t);
+                            } else if (i + 1 == PIECES) {
+                                p2.insert(*t);
+                            }
+                        }
+                    } else {
+                        std::cerr << "unreachable position" << std::endl;
+                        exit(1);
+                    }
                 }
-            }
-            else {
-                std::cerr << "unreachable position" << std::endl;
-                exit(1);
             }
         }
     }
