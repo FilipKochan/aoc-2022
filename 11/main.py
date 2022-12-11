@@ -56,12 +56,12 @@ def parse() -> Tuple[List[Monkey], List[Monkey]]:
             monkeys_pt1.append(Monkey(items[:], operation, test, throw_to_if_true, throw_to_if_false))
             monkeys_pt2.append(Monkey(items[:], operation, test, throw_to_if_true, throw_to_if_false))
 
-    gcd = 1
+    lcm = 1
     for p in set(test_primes):
-        gcd *= p
+        lcm *= p
 
     for m in monkeys_pt2:
-        m.reduce_factor = gcd
+        m.reduce_factor = lcm
 
     return monkeys_pt1, monkeys_pt2
 
